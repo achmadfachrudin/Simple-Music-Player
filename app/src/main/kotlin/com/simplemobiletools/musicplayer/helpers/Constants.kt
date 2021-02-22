@@ -13,6 +13,8 @@ const val WERE_INITIAL_TRACKS_FETCHED = "were_initial_tracks_fetched"
 const val RESTART_PLAYER = "RESTART_PLAYER"
 const val EQUALIZER_PRESET_CUSTOM = -1
 
+const val APP_PACKAGE_NAME = "com.aespa.songlagukpop"
+const val ARTIST_NAME = "aespa"
 const val ARTIST = "artist"
 const val ALBUM = "album"
 const val TRACK = "track"

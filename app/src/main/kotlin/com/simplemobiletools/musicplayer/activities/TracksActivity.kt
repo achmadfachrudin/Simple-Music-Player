@@ -129,8 +129,8 @@ class TracksActivity : SimpleActivity() {
 
         menu.apply {
             findItem(R.id.sort).isVisible = playlist != null
-            findItem(R.id.add_file_to_playlist).isVisible = playlist != null
-            findItem(R.id.add_folder_to_playlist).isVisible = playlist != null
+//            findItem(R.id.add_file_to_playlist).isVisible = playlist != null
+//            findItem(R.id.add_folder_to_playlist).isVisible = playlist != null
         }
 
         updateMenuItemColors(menu)
@@ -140,8 +140,8 @@ class TracksActivity : SimpleActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.sort -> showSortingDialog()
-            R.id.add_file_to_playlist -> addFileToPlaylist()
-            R.id.add_folder_to_playlist -> addFolderToPlaylist()
+//            R.id.add_file_to_playlist -> addFileToPlaylist()
+//            R.id.add_folder_to_playlist -> addFolderToPlaylist()
             else -> return super.onOptionsItemSelected(item)
         }
         return true

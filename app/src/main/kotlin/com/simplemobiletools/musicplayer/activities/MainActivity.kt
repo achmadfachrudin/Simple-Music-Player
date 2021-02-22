@@ -103,7 +103,7 @@ class MainActivity : SimpleActivity() {
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         menu.apply {
             findItem(R.id.create_new_playlist).isVisible = getCurrentFragment() == playlists_fragment_holder
-            findItem(R.id.create_playlist_from_folder).isVisible = getCurrentFragment() == playlists_fragment_holder
+//            findItem(R.id.create_playlist_from_folder).isVisible = getCurrentFragment() == playlists_fragment_holder
         }
 
         return true
@@ -114,7 +114,7 @@ class MainActivity : SimpleActivity() {
             R.id.sort -> showSortingDialog()
             R.id.sleep_timer -> showSleepTimer()
             R.id.create_new_playlist -> createNewPlaylist()
-            R.id.create_playlist_from_folder -> createPlaylistFromFolder()
+//            R.id.create_playlist_from_folder -> createPlaylistFromFolder()
             R.id.equalizer -> launchEqualizer()
             R.id.settings -> launchSettings()
 //            R.id.about -> launchAbout()

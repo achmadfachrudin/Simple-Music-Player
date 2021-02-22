@@ -94,7 +94,10 @@ fun Context.getArtistsSync(): ArrayList<Artist> {
                     val title = cursor.getStringValue(Audio.Artists.ARTIST) ?: MediaStore.UNKNOWN_STRING
                     var artist = Artist(id, title, 0, 0, 0)
                     artist = fillArtistExtras(this, artist)
-                    if (artist.albumCnt > 0) {
+                    if (artist.title.replace(" ", "")
+                                    .replace("-", "")
+                                    .contains(ARTIST_NAME, true) && artist.albumCnt > 0)
+                    {
                         artists.add(artist)
                     }
                 } while (cursor.moveToNext())
