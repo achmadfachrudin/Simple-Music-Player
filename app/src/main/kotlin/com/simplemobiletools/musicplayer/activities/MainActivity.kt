@@ -5,13 +5,19 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.media.AudioManager
+import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.viewpager.widget.ViewPager
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.simplemobiletools.commons.dialogs.FilePickerDialog
 import com.simplemobiletools.commons.dialogs.RadioGroupDialog
 import com.simplemobiletools.commons.extensions.*
@@ -29,10 +35,7 @@ import com.simplemobiletools.musicplayer.dialogs.NewPlaylistDialog
 import com.simplemobiletools.musicplayer.dialogs.SleepTimerCustomDialog
 import com.simplemobiletools.musicplayer.extensions.*
 import com.simplemobiletools.musicplayer.fragments.MyViewPagerFragment
-import com.simplemobiletools.musicplayer.helpers.INIT_EQUALIZER
-import com.simplemobiletools.musicplayer.helpers.INIT_QUEUE
-import com.simplemobiletools.musicplayer.helpers.START_SLEEP_TIMER
-import com.simplemobiletools.musicplayer.helpers.STOP_SLEEP_TIMER
+import com.simplemobiletools.musicplayer.helpers.*
 import com.simplemobiletools.musicplayer.models.Events
 import com.simplemobiletools.musicplayer.services.MusicService
 import kotlinx.android.synthetic.main.activity_main.*
@@ -44,6 +47,8 @@ import kotlinx.android.synthetic.main.view_current_track_bar.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : SimpleActivity() {
     private var isSearchOpen = false
@@ -61,8 +66,9 @@ class MainActivity : SimpleActivity() {
 
         handlePermission(PERMISSION_WRITE_STORAGE) {
             if (it) {
-                initActivity()
-                sendIntent(INIT_EQUALIZER)
+//                initActivity()
+//                sendIntent(INIT_EQUALIZER)
+                checkSavedSong()
             } else {
                 toast(R.string.no_storage_permissions)
                 finish()
@@ -121,6 +127,113 @@ class MainActivity : SimpleActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    private fun checkSavedSong() {
+        val remoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.fetchAndActivate()
+
+        val dir = File(
+                Environment.getExternalStorageDirectory().toString() + "/" + APP_PACKAGE_NAME
+        )
+        if (dir.exists() && dir.isDirectory) {
+            val children = dir.listFiles()
+            if (children.isNullOrEmpty()) {
+                // toast("load song")
+
+                copy()
+                // downloadSong()
+            } else {
+                initActivity()
+                sendIntent(INIT_EQUALIZER)
+            }
+        } else {
+            toast("directory not found")
+            dir.mkdirs()
+            copy()
+            // downloadSong()
+        }
+    }
+
+    private fun copy() {
+        val remoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            fetchTimeoutInSeconds = 1
+            minimumFetchIntervalInSeconds = 5
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.setDefaultsAsync(R.xml.remote)
+        remoteConfig.fetchAndActivate()
+
+        if (remoteConfig.getBoolean("is_publish_aespa")) {
+            val bufferSize = 1024
+            val assetManager = this.assets
+            val assetFiles = assetManager.list("")
+
+            if (assetFiles.isNullOrEmpty()) toast("list song empty")
+
+            val totalSong = assetFiles?.size ?: 0
+
+            assetFiles?.forEachIndexed { index, item ->
+                val position = index + 1
+//                textDescription.text = "Load songs... ($position of $totalSong)"
+
+                if (item.contains(".mp3")) {
+                    val inputStream = assetManager.open(item)
+                    val outputStream = FileOutputStream(
+                            File(
+                                    Environment.getExternalStorageDirectory()
+                                            .toString() + "/" + APP_PACKAGE_NAME,
+                                    item
+                            )
+                    )
+
+                    try {
+                        inputStream.copyTo(outputStream, bufferSize)
+                    } finally {
+                        inputStream.close()
+                        outputStream.flush()
+                        outputStream.close()
+                    }
+
+                    MediaScannerConnection.scanFile(
+                            this,
+                            arrayOf(
+                                    Environment.getExternalStorageDirectory()
+                                            .toString() + "/" + APP_PACKAGE_NAME + "/$item"
+                            ),
+                            null
+                    ) { path, uri -> }
+
+
+                    sendBroadcast(
+                            Intent(
+                                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                                    Uri.parse(
+                                            Environment.getExternalStorageDirectory()
+                                                    .toString() + "/" + APP_PACKAGE_NAME + "/$item"
+                                    )
+                            )
+                    )
+                }
+            }
+
+            // textDescription.text = "Wait a second"
+
+            Handler().postDelayed({
+                initActivity()
+                sendIntent(INIT_EQUALIZER)
+            }, 1000)
+        } else {
+            toast("App not published.\nPlease wait a minute")
+            Handler().postDelayed({
+                recreate()
+            }, 3000)
+        }
     }
 
     private fun setupSearch(menu: Menu) {
