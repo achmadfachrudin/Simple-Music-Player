@@ -2,6 +2,7 @@ package com.simplemobiletools.musicplayer.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.Menu
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -19,10 +20,30 @@ import com.simplemobiletools.musicplayer.helpers.SHOW_FILENAME_IF_UNAVAILABLE
 import com.simplemobiletools.musicplayer.helpers.SHOW_FILENAME_NEVER
 import kotlinx.android.synthetic.main.activity_settings.*
 import java.util.*
+import kotlin.system.exitProcess
 
 class SettingsActivity : SimpleActivity() {
 
     private var mInterstitialAd: InterstitialAd? = null
+
+    private lateinit var adView: AdView
+
+    private val adAdaptiveSize: AdSize
+        get() {
+            val display = this.windowManager?.defaultDisplay
+            val outMetrics = DisplayMetrics()
+            display?.getMetrics(outMetrics)
+
+            val density = outMetrics.density
+
+            var adWidthPixels = adViewContainer.width.toFloat()
+            if (adWidthPixels == 0f) {
+                adWidthPixels = outMetrics.widthPixels.toFloat()
+            }
+
+            val adWidth = (adWidthPixels / density).toInt()
+            return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,23 +76,25 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupAds() {
-        MobileAds.initialize(this)
         val requestConfiguration = RequestConfiguration.Builder()
                 .setTestDeviceIds(listOf(getString(R.string.ads_device)))
                 .build()
         MobileAds.setRequestConfiguration(requestConfiguration)
 
-        val adRequest = AdRequest.Builder().build()
+        InterstitialAd.load(
+                this,
+                getString(R.string.ads_interstitial),
+                AdRequest.Builder().build(),
+                object : InterstitialAdLoadCallback() {
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        mInterstitialAd = null
+                    }
 
-        InterstitialAd.load(this, getString(R.string.ads_interstitial), adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                mInterstitialAd = null
-            }
-
-            override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                mInterstitialAd = interstitialAd
-            }
-        })
+                    override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                        mInterstitialAd = interstitialAd
+                    }
+                }
+        )
 
         mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
@@ -87,6 +110,19 @@ class SettingsActivity : SimpleActivity() {
 
         if (mInterstitialAd != null) {
             mInterstitialAd?.show(this)
+        }
+
+        loadBanner()
+    }
+
+
+    private fun loadBanner() {
+        adView = AdView(this)
+        adViewContainer.addView(adView)
+        adView.apply {
+            adUnitId = getString(R.string.ads_adaptive)
+            adSize = adAdaptiveSize
+            loadAd(AdRequest.Builder().build())
         }
     }
 
@@ -112,7 +148,7 @@ class SettingsActivity : SimpleActivity() {
         settings_use_english_holder.setOnClickListener {
             settings_use_english.toggle()
             config.useEnglish = settings_use_english.isChecked
-            System.exit(0)
+            exitProcess(0)
         }
     }
 
