@@ -52,7 +52,8 @@ class SettingsActivity : SimpleActivity() {
 
     override fun onResume() {
         super.onResume()
-        setupAds()
+        loadAds()
+        loadBanner()
         setupPurchaseThankYou()
         setupCustomizeColors()
         setupCustomizeWidgetColors()
@@ -75,7 +76,7 @@ class SettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupAds() {
+    private fun loadAds() {
         val requestConfiguration = RequestConfiguration.Builder()
                 .setTestDeviceIds(listOf(getString(R.string.ads_device)))
                 .build()
@@ -95,7 +96,9 @@ class SettingsActivity : SimpleActivity() {
                     }
                 }
         )
+    }
 
+    private fun loadInterstitial() {
         mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
             }
@@ -111,8 +114,6 @@ class SettingsActivity : SimpleActivity() {
         if (mInterstitialAd != null) {
             mInterstitialAd?.show(this)
         }
-
-        loadBanner()
     }
 
 
@@ -181,4 +182,9 @@ class SettingsActivity : SimpleActivity() {
         SHOW_FILENAME_IF_UNAVAILABLE -> R.string.title_is_not_available
         else -> R.string.always
     })
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        loadInterstitial()
+    }
 }
