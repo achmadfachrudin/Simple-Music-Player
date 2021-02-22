@@ -3,6 +3,9 @@ package com.simplemobiletools.musicplayer.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.simplemobiletools.commons.dialogs.RadioGroupDialog
 import com.simplemobiletools.commons.extensions.*
 import com.simplemobiletools.commons.helpers.IS_CUSTOMIZING_COLORS
@@ -18,6 +21,9 @@ import kotlinx.android.synthetic.main.activity_settings.*
 import java.util.*
 
 class SettingsActivity : SimpleActivity() {
+
+    private var mInterstitialAd: InterstitialAd? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -25,7 +31,7 @@ class SettingsActivity : SimpleActivity() {
 
     override fun onResume() {
         super.onResume()
-
+        setupAds()
         setupPurchaseThankYou()
         setupCustomizeColors()
         setupCustomizeWidgetColors()
@@ -45,6 +51,42 @@ class SettingsActivity : SimpleActivity() {
 //        settings_purchase_thank_you_holder.beGoneIf(isOrWasThankYouInstalled())
         settings_purchase_thank_you_holder.setOnClickListener {
             launchPurchaseThankYouIntent()
+        }
+    }
+
+    private fun setupAds() {
+        MobileAds.initialize(this)
+        val requestConfiguration = RequestConfiguration.Builder()
+                .setTestDeviceIds(listOf(getString(R.string.ads_device)))
+                .build()
+        MobileAds.setRequestConfiguration(requestConfiguration)
+
+        val adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(this, getString(R.string.ads_interstitial), adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                mInterstitialAd = null
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                mInterstitialAd = interstitialAd
+            }
+        })
+
+        mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+            }
+
+            override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+            }
+
+            override fun onAdShowedFullScreenContent() {
+                mInterstitialAd = null
+            }
+        }
+
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.show(this)
         }
     }
 
@@ -86,9 +128,9 @@ class SettingsActivity : SimpleActivity() {
         settings_show_filename.text = getShowFilenameText()
         settings_show_filename_holder.setOnClickListener {
             val items = arrayListOf(
-                RadioItem(SHOW_FILENAME_NEVER, getString(R.string.never)),
-                RadioItem(SHOW_FILENAME_IF_UNAVAILABLE, getString(R.string.title_is_not_available)),
-                RadioItem(SHOW_FILENAME_ALWAYS, getString(R.string.always)))
+                    RadioItem(SHOW_FILENAME_NEVER, getString(R.string.never)),
+                    RadioItem(SHOW_FILENAME_IF_UNAVAILABLE, getString(R.string.title_is_not_available)),
+                    RadioItem(SHOW_FILENAME_ALWAYS, getString(R.string.always)))
 
             RadioGroupDialog(this@SettingsActivity, items, config.showFilename) {
                 config.showFilename = it as Int
