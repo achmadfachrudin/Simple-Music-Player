@@ -20,6 +20,11 @@
     <string name="sleep_timer">Sleep timer</string>
     <string name="volume">Volume</string>
 
+    <string name="ads_device">6E04E8723E6E57EEC08183D7C8F898A4</string>
+    <string name="ads_app">ca-app-pub-8667518641371554~2941473478</string>
+    <string name="ads_interstitial">ca-app-pub-8667518641371554/3484398956</string>
+    <string name="ads_adaptive">ca-app-pub-8667518641371554/3264907104</string>
+
     <!-- Playlists -->
     <string name="add_file_to_playlist">Add file to playlist</string>
     <string name="add_folder_to_playlist">Add folder to playlist</string>

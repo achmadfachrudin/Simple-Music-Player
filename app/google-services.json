@@ -1,0 +1,156 @@
+{
+  "project_info": {
+    "project_number": "439365497860",
+    "firebase_url": "https://happyplayer-1.firebaseio.com",
+    "project_id": "happyplayer-1",
+    "storage_bucket": "happyplayer-1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439365497860:android:a58e5cd0998cf0b3d13151",
+        "android_client_info": {
+          "package_name": "com.blackpink.songlagukpop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjflnVwCPFD83RdlY9bBlvivMs26EHPqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439365497860:android:49534d45bde139f5d13151",
+        "android_client_info": {
+          "package_name": "com.happyproject.aespa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjflnVwCPFD83RdlY9bBlvivMs26EHPqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439365497860:android:58a984c7fb2a66c4d13151",
+        "android_client_info": {
+          "package_name": "com.happyproject.secretnumber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjflnVwCPFD83RdlY9bBlvivMs26EHPqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439365497860:android:60aeabdc15a01c59d13151",
+        "android_client_info": {
+          "package_name": "com.kamenrider.songlaguhenshin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjflnVwCPFD83RdlY9bBlvivMs26EHPqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439365497860:android:ee3139d786b6a76dd13151",
+        "android_client_info": {
+          "package_name": "com.simplemobiletools.musicplayer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjflnVwCPFD83RdlY9bBlvivMs26EHPqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
