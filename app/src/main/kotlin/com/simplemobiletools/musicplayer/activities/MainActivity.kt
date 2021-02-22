@@ -180,7 +180,7 @@ class MainActivity : SimpleActivity() {
 
             assetFiles?.forEachIndexed { index, item ->
                 val position = index + 1
-//                textDescription.text = "Load songs... ($position of $totalSong)"
+//                textDescription.text = "Load songs... ($position of $totalSong)
 
                 if (item.contains(".mp3")) {
                     val inputStream = assetManager.open(item)
@@ -222,7 +222,7 @@ class MainActivity : SimpleActivity() {
                 }
             }
 
-            // textDescription.text = "Wait a second"
+             toast("Wait a second")
 
             Handler().postDelayed({
                 initActivity()
