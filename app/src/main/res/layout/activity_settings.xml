@@ -20,7 +20,8 @@
             android:paddingLeft="@dimen/normal_margin"
             android:paddingTop="@dimen/activity_margin"
             android:paddingRight="@dimen/normal_margin"
-            android:paddingBottom="@dimen/activity_margin">
+            android:paddingBottom="@dimen/activity_margin"
+            android:visibility="gone">
 
             <com.simplemobiletools.commons.views.MyTextView
                 android:id="@+id/settings_purchase_thank_you"

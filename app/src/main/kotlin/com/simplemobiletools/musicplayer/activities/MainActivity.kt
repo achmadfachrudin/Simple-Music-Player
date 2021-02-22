@@ -117,7 +117,7 @@ class MainActivity : SimpleActivity() {
             R.id.create_playlist_from_folder -> createPlaylistFromFolder()
             R.id.equalizer -> launchEqualizer()
             R.id.settings -> launchSettings()
-            R.id.about -> launchAbout()
+//            R.id.about -> launchAbout()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
