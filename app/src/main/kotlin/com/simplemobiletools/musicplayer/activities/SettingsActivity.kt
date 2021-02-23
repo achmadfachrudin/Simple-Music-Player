@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.Menu
 import com.google.android.gms.ads.*
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.simplemobiletools.commons.dialogs.RadioGroupDialog
 import com.simplemobiletools.commons.extensions.*
 import com.simplemobiletools.commons.helpers.IS_CUSTOMIZING_COLORS
@@ -23,8 +21,6 @@ import java.util.*
 import kotlin.system.exitProcess
 
 class SettingsActivity : SimpleActivity() {
-
-    private var mInterstitialAd: InterstitialAd? = null
 
     private lateinit var adView: AdView
 
@@ -76,46 +72,13 @@ class SettingsActivity : SimpleActivity() {
         }
     }
 
+
     private fun loadAds() {
         val requestConfiguration = RequestConfiguration.Builder()
                 .setTestDeviceIds(listOf(getString(R.string.ads_device)))
                 .build()
         MobileAds.setRequestConfiguration(requestConfiguration)
-
-        InterstitialAd.load(
-                this,
-                getString(R.string.ads_interstitial),
-                AdRequest.Builder().build(),
-                object : InterstitialAdLoadCallback() {
-                    override fun onAdFailedToLoad(adError: LoadAdError) {
-                        mInterstitialAd = null
-                    }
-
-                    override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                        mInterstitialAd = interstitialAd
-                    }
-                }
-        )
     }
-
-    private fun loadInterstitial() {
-        mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
-            override fun onAdDismissedFullScreenContent() {
-            }
-
-            override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-            }
-
-            override fun onAdShowedFullScreenContent() {
-                mInterstitialAd = null
-            }
-        }
-
-        if (mInterstitialAd != null) {
-            mInterstitialAd?.show(this)
-        }
-    }
-
 
     private fun loadBanner() {
         adView = AdView(this)

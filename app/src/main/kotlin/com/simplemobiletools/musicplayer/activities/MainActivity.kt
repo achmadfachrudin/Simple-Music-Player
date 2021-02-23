@@ -15,6 +15,9 @@ import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.viewpager.widget.ViewPager
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
@@ -55,6 +58,8 @@ class MainActivity : SimpleActivity() {
     private var searchMenuItem: MenuItem? = null
     private var bus: EventBus? = null
 
+    private var mInterstitialAd: InterstitialAd? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -78,6 +83,7 @@ class MainActivity : SimpleActivity() {
         volumeControlStream = AudioManager.STREAM_MUSIC
         checkWhatsNewDialog()
         checkAppOnSDCard()
+        loadAds()
     }
 
     override fun onResume() {
@@ -127,6 +133,40 @@ class MainActivity : SimpleActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    private fun loadAds() {
+        val requestConfiguration = RequestConfiguration.Builder()
+                .setTestDeviceIds(listOf(getString(R.string.ads_device)))
+                .build()
+        MobileAds.setRequestConfiguration(requestConfiguration)
+
+        InterstitialAd.load(
+                this,
+                getString(R.string.ads_interstitial),
+                AdRequest.Builder().build(),
+                object : InterstitialAdLoadCallback() {
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        mInterstitialAd = null
+                    }
+
+                    override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                        mInterstitialAd = interstitialAd
+                    }
+                }
+        )
+
+        mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+            }
+
+            override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+            }
+
+            override fun onAdShowedFullScreenContent() {
+                mInterstitialAd = null
+            }
+        }
     }
 
     private fun checkSavedSong() {
@@ -470,11 +510,21 @@ class MainActivity : SimpleActivity() {
     }
 
     private fun launchEqualizer() {
-        startActivity(Intent(applicationContext, EqualizerActivity::class.java))
+        val number = (0..10).random()
+        if (mInterstitialAd != null && (number % 2 == 0)) {
+            mInterstitialAd?.show(this)
+        } else {
+            startActivity(Intent(applicationContext, EqualizerActivity::class.java))
+        }
     }
 
     private fun launchSettings() {
-        startActivity(Intent(applicationContext, SettingsActivity::class.java))
+        val number = (0..10).random()
+        if (mInterstitialAd != null && (number % 2 == 0)) {
+            mInterstitialAd?.show(this)
+        } else {
+            startActivity(Intent(applicationContext, SettingsActivity::class.java))
+        }
     }
 
     private fun launchAbout() {
