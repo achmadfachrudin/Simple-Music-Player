@@ -16,7 +16,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "com.simplemobiletools.musicplayer"
+        applicationId "com.aespa.songlagukpop"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
