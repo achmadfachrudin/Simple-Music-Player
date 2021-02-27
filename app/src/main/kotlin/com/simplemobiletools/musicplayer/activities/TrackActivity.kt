@@ -1,7 +1,7 @@
 package com.simplemobiletools.musicplayer.activities
 
 import android.content.Intent
-import android.graphics.Bitmap
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -21,6 +21,7 @@ import com.bumptech.glide.request.target.Target
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.simplemobiletools.commons.extensions.*
+import com.simplemobiletools.commons.helpers.ensureBackgroundThread
 import com.simplemobiletools.musicplayer.R
 import com.simplemobiletools.musicplayer.extensions.config
 import com.simplemobiletools.musicplayer.extensions.sendIntent
@@ -128,26 +129,6 @@ class TrackActivity : SimpleActivity() {
         }
     }
 
-    private fun setupNextTrackInfo(track: Track?) {
-        val artist = if (track?.artist?.trim()?.isNotEmpty() == true && track.artist != MediaStore.UNKNOWN_STRING) {
-            " • ${track.artist}"
-        } else {
-            ""
-        }
-
-        next_track_label.text = "${getString(R.string.next_track)} ${track?.title}$artist"
-
-        val cornerRadius = resources.getDimension(R.dimen.rounded_corner_radius_small).toInt()
-        val options = RequestOptions()
-            .error(nextTrackPlaceholder)
-            .transform(CenterCrop(), RoundedCorners(cornerRadius))
-
-        Glide.with(this)
-            .load(track?.coverArt)
-            .apply(options)
-            .into(findViewById(R.id.next_track_image))
-    }
-
     private fun setupButtons() {
         activity_track_toggle_shuffle.setOnClickListener { toggleShuffle() }
         activity_track_previous.setOnClickListener { sendIntent(PREVIOUS) }
@@ -165,35 +146,81 @@ class TrackActivity : SimpleActivity() {
         }
     }
 
+    private fun setupNextTrackInfo(track: Track?) {
+        val artist = if (track?.artist?.trim()?.isNotEmpty() == true && track.artist != MediaStore.UNKNOWN_STRING) {
+            " • ${track.artist}"
+        } else {
+            ""
+        }
+
+        next_track_label.text = "${getString(R.string.next_track)} ${track?.title}$artist"
+
+        ensureBackgroundThread {
+            val cornerRadius = resources.getDimension(R.dimen.rounded_corner_radius_small).toInt()
+            val wantedSize = resources.getDimension(R.dimen.song_image_size).toInt()
+            val options = RequestOptions()
+                .transform(CenterCrop(), RoundedCorners(cornerRadius))
+
+            try {
+                // change cover image manually only once loaded successfully to avoid blinking at fails and placeholders
+                Glide.with(this)
+                    .load(track?.coverArt)
+                    .apply(options)
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                            next_track_image.setImageDrawable(nextTrackPlaceholder)
+                            return true
+                        }
+
+                        override fun onResourceReady(resource: Drawable, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                            next_track_image.setImageDrawable(resource)
+                            return false
+                        }
+                    })
+                    .into(wantedSize, wantedSize)
+                    .get()
+            } catch (e: Exception) {
+            }
+        }
+    }
+
     private fun setupTopArt(coverArt: String) {
-        val drawable = resources.getDrawable(R.drawable.ic_headset)
         var wantedHeight = resources.getDimension(R.dimen.top_art_height).toInt()
         wantedHeight = Math.min(wantedHeight, realScreenSize.y / 2)
 
-        val placeholder = getResizedDrawable(drawable, wantedHeight)
-        placeholder.applyColorFilter(config.textColor)
+        ensureBackgroundThread {
+            val wantedWidth = realScreenSize.x
+            val options = RequestOptions().centerCrop()
 
-        val wantedWidth = realScreenSize.x
-        val options = RequestOptions()
-            .error(placeholder)
-            .centerCrop()
+            try {
+                // change cover image manually only once loaded successfully to avoid blinking at fails and placeholders
+                Glide.with(this)
+                    .load(coverArt)
+                    .apply(options)
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                            val drawable = resources.getDrawable(R.drawable.ic_headset)
+                            val placeholder = getResizedDrawable(drawable, wantedHeight)
+                            placeholder.applyColorFilter(config.textColor)
+                            activity_track_image.setImageDrawable(placeholder)
+                            return true
+                        }
 
-        Glide.with(this)
-            .load(coverArt)
-            .apply(options)
-            .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean) = false
+                        override fun onResourceReady(resource: Drawable, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                            val coverHeight = resource.intrinsicHeight
+                            if (coverHeight > 0 && activity_track_image.height != coverHeight) {
+                                activity_track_image.layoutParams.height = coverHeight
+                            }
 
-                override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                    val coverHeight = resource?.intrinsicHeight ?: 0
-                    if (coverHeight > 0 && activity_track_image.height != coverHeight) {
-                        activity_track_image.layoutParams.height = coverHeight
-                    }
-                    return false
-                }
-            })
-            .override(wantedWidth, wantedHeight)
-            .into(findViewById(R.id.activity_track_image))
+                            activity_track_image.setImageDrawable(resource)
+                            return false
+                        }
+                    })
+                    .into(wantedWidth, wantedHeight)
+                    .get()
+            } catch (e: Exception) {
+            }
+        }
     }
 
     private fun toggleShuffle() {
