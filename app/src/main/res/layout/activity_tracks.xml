@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/current_track_bar"
+        android:layout_below="@+id/adViewContainer"
         android:clipToPadding="false"
         app:layoutManager="com.simplemobiletools.commons.views.MyLinearLayoutManager" />
 
@@ -18,6 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_above="@+id/current_track_bar"
+        android:layout_below="@+id/adViewContainer"
         android:layout_alignParentEnd="true"
         android:paddingStart="@dimen/normal_margin">
 
@@ -52,6 +54,14 @@
         android:text="@string/add_folder_to_playlist"
         android:textSize="@dimen/bigger_text_size"
         android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/adViewContainer"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"/>
 
     <include
         layout="@layout/view_current_track_bar"

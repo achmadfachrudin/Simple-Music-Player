@@ -3,8 +3,10 @@ package com.simplemobiletools.musicplayer.activities
 import android.content.ContentUris
 import android.content.Intent
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
+import com.google.android.gms.ads.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.simplemobiletools.commons.dialogs.FilePickerDialog
@@ -19,6 +21,7 @@ import com.simplemobiletools.musicplayer.helpers.*
 import com.simplemobiletools.musicplayer.models.*
 import com.simplemobiletools.musicplayer.services.MusicService
 import kotlinx.android.synthetic.main.activity_tracks.*
+import kotlinx.android.synthetic.main.activity_tracks.adViewContainer
 import kotlinx.android.synthetic.main.view_current_track_bar.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -29,6 +32,25 @@ class TracksActivity : SimpleActivity() {
     private var bus: EventBus? = null
     private var playlist: Playlist? = null
     private var lastFilePickerPath = ""
+
+    private lateinit var adView: AdView
+
+    private val adAdaptiveSize: AdSize
+        get() {
+            val display = this.windowManager?.defaultDisplay
+            val outMetrics = DisplayMetrics()
+            display?.getMetrics(outMetrics)
+
+            val density = outMetrics.density
+
+            var adWidthPixels = adViewContainer.width.toFloat()
+            if (adWidthPixels == 0f) {
+                adWidthPixels = outMetrics.widthPixels.toFloat()
+            }
+
+            val adWidth = (adWidthPixels / density).toInt()
+            return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +134,9 @@ class TracksActivity : SimpleActivity() {
                 startActivity(this)
             }
         }
+
+        loadAds()
+        loadBanner()
     }
 
     override fun onResume() {
@@ -122,6 +147,23 @@ class TracksActivity : SimpleActivity() {
     override fun onDestroy() {
         super.onDestroy()
         bus?.unregister(this)
+    }
+
+    private fun loadAds() {
+        val requestConfiguration = RequestConfiguration.Builder()
+                .setTestDeviceIds(listOf(getString(R.string.ads_device)))
+                .build()
+        MobileAds.setRequestConfiguration(requestConfiguration)
+    }
+
+    private fun loadBanner() {
+        adView = AdView(this)
+        adViewContainer.addView(adView)
+        adView.apply {
+            adUnitId = getString(R.string.ads_adaptive)
+            adSize = adAdaptiveSize
+            loadAd(AdRequest.Builder().build())
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

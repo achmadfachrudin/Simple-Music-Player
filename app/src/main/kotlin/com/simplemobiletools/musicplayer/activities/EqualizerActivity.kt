@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.media.audiofx.Equalizer
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.Menu
 import android.widget.SeekBar
+import com.google.android.gms.ads.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.simplemobiletools.commons.dialogs.RadioGroupDialog
@@ -18,6 +20,7 @@ import com.simplemobiletools.musicplayer.extensions.config
 import com.simplemobiletools.musicplayer.helpers.EQUALIZER_PRESET_CUSTOM
 import com.simplemobiletools.musicplayer.services.MusicService
 import kotlinx.android.synthetic.main.activity_equalizer.*
+import kotlinx.android.synthetic.main.activity_equalizer.adViewContainer
 import kotlinx.android.synthetic.main.equalizer_band.view.*
 import java.text.DecimalFormat
 import java.util.*
@@ -26,15 +29,53 @@ class EqualizerActivity : SimpleActivity() {
     private var bands = HashMap<Short, Int>()
     private var bandSeekBars = ArrayList<MySeekBar>()
 
+    private lateinit var adView: AdView
+
+    private val adAdaptiveSize: AdSize
+        get() {
+            val display = this.windowManager?.defaultDisplay
+            val outMetrics = DisplayMetrics()
+            display?.getMetrics(outMetrics)
+
+            val density = outMetrics.density
+
+            var adWidthPixels = adViewContainer.width.toFloat()
+            if (adWidthPixels == 0f) {
+                adWidthPixels = outMetrics.widthPixels.toFloat()
+            }
+
+            val adWidth = (adWidthPixels / density).toInt()
+            return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_equalizer)
         initMediaPlayer()
+        loadAds()
+        loadBanner()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         updateMenuItemColors(menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun loadAds() {
+        val requestConfiguration = RequestConfiguration.Builder()
+                .setTestDeviceIds(listOf(getString(R.string.ads_device)))
+                .build()
+        MobileAds.setRequestConfiguration(requestConfiguration)
+    }
+
+    private fun loadBanner() {
+        adView = AdView(this)
+        adViewContainer.addView(adView)
+        adView.apply {
+            adUnitId = getString(R.string.ads_adaptive)
+            adSize = adAdaptiveSize
+            loadAd(AdRequest.Builder().build())
+        }
     }
 
     @SuppressLint("SetTextI18n")

@@ -56,7 +56,7 @@ class SettingsActivity : SimpleActivity() {
         setupUseEnglish()
         setupSwapPrevNext()
         setupReplaceTitle()
-        updateTextColors(settings_scrollview)
+        updateTextColors(settings_holder)
         invalidateOptionsMenu()
     }
 
@@ -71,7 +71,6 @@ class SettingsActivity : SimpleActivity() {
             launchPurchaseThankYouIntent()
         }
     }
-
 
     private fun loadAds() {
         val requestConfiguration = RequestConfiguration.Builder()
@@ -145,9 +144,4 @@ class SettingsActivity : SimpleActivity() {
         SHOW_FILENAME_IF_UNAVAILABLE -> R.string.title_is_not_available
         else -> R.string.always
     })
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        loadInterstitial()
-    }
 }

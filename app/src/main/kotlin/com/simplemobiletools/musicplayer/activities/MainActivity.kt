@@ -60,6 +60,8 @@ class MainActivity : SimpleActivity() {
 
     private var mInterstitialAd: InterstitialAd? = null
 
+    private var backPressedOnce = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -262,7 +264,7 @@ class MainActivity : SimpleActivity() {
                 }
             }
 
-             toast("Wait a second")
+            toast("Wait a second")
 
             Handler().postDelayed({
                 initActivity()
@@ -351,9 +353,9 @@ class MainActivity : SimpleActivity() {
         })
 
         main_tabs_holder.onTabSelectionChanged(
-            tabSelectedAction = {
-                viewpager.currentItem = it.position
-            }
+                tabSelectedAction = {
+                    viewpager.currentItem = it.position
+                }
         )
 
         val tabLabels = arrayOf(getString(R.string.playlists), getString(R.string.artists), getString(R.string.albums), getString(R.string.tracks))
@@ -426,11 +428,11 @@ class MainActivity : SimpleActivity() {
         val hour = resources.getQuantityString(R.plurals.hours, 1, 1)
 
         val items = arrayListOf(
-            RadioItem(5 * 60, "5 $minutes"),
-            RadioItem(10 * 60, "10 $minutes"),
-            RadioItem(20 * 60, "20 $minutes"),
-            RadioItem(30 * 60, "30 $minutes"),
-            RadioItem(60 * 60, hour))
+                RadioItem(5 * 60, "5 $minutes"),
+                RadioItem(10 * 60, "10 $minutes"),
+                RadioItem(20 * 60, "20 $minutes"),
+                RadioItem(30 * 60, "30 $minutes"),
+                RadioItem(60 * 60, hour))
 
         if (items.none { it.id == config.lastSleepTimerSeconds }) {
             val lastSleepTimerMinutes = config.lastSleepTimerSeconds / 60
@@ -513,30 +515,28 @@ class MainActivity : SimpleActivity() {
         val number = (0..10).random()
         if (mInterstitialAd != null && (number % 2 == 0)) {
             mInterstitialAd?.show(this)
-        } else {
-            startActivity(Intent(applicationContext, EqualizerActivity::class.java))
         }
+        startActivity(Intent(applicationContext, EqualizerActivity::class.java))
     }
 
     private fun launchSettings() {
-        val number = (0..10).random()
+        val number = (2..10).random()
         if (mInterstitialAd != null && (number % 2 == 0)) {
             mInterstitialAd?.show(this)
-        } else {
-            startActivity(Intent(applicationContext, SettingsActivity::class.java))
         }
+        startActivity(Intent(applicationContext, SettingsActivity::class.java))
     }
 
     private fun launchAbout() {
         val licenses = LICENSE_EVENT_BUS or LICENSE_GLIDE
 
         val faqItems = arrayListOf(
-            FAQItem(R.string.faq_1_title, R.string.faq_1_text),
-            FAQItem(R.string.faq_1_title_commons, R.string.faq_1_text_commons),
-            FAQItem(R.string.faq_4_title_commons, R.string.faq_4_text_commons),
-            FAQItem(R.string.faq_2_title_commons, R.string.faq_2_text_commons),
-            FAQItem(R.string.faq_6_title_commons, R.string.faq_6_text_commons),
-            FAQItem(R.string.faq_9_title_commons, R.string.faq_9_text_commons))
+                FAQItem(R.string.faq_1_title, R.string.faq_1_text),
+                FAQItem(R.string.faq_1_title_commons, R.string.faq_1_text_commons),
+                FAQItem(R.string.faq_4_title_commons, R.string.faq_4_text_commons),
+                FAQItem(R.string.faq_2_title_commons, R.string.faq_2_text_commons),
+                FAQItem(R.string.faq_6_title_commons, R.string.faq_6_text_commons),
+                FAQItem(R.string.faq_9_title_commons, R.string.faq_9_text_commons))
 
         startAboutActivity(R.string.app_name, licenses, BuildConfig.VERSION_NAME, faqItems, true)
     }
@@ -550,5 +550,17 @@ class MainActivity : SimpleActivity() {
             add(Release(59, R.string.release_59))
             checkWhatsNew(this, BuildConfig.VERSION_CODE)
         }
+    }
+
+    override fun onBackPressed() {
+        if (backPressedOnce) {
+            super.onBackPressed()
+            return
+        }
+
+        backPressedOnce = true
+        toast("Press back again to exit")
+
+        Handler().postDelayed({}, 2000)
     }
 }
