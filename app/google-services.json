@@ -8,6 +8,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:439365497860:android:494a75bb00059a7dd13151",
+        "android_client_info": {
+          "package_name": "com.aespa.songlagukpop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjflnVwCPFD83RdlY9bBlvivMs26EHPqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439365497860-8ouqon4a6kha7a71spf80iq25fjns6mb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:439365497860:android:a58e5cd0998cf0b3d13151",
         "android_client_info": {
           "package_name": "com.blackpink.songlagukpop"
