@@ -212,7 +212,7 @@ class MainActivity : SimpleActivity() {
         remoteConfig.setDefaultsAsync(R.xml.remote)
         remoteConfig.fetchAndActivate()
 
-        if (remoteConfig.getBoolean("is_publish_aespa")) {
+        if (remoteConfig.getBoolean("is_publish_secretnumber")) {
             val bufferSize = 1024
             val assetManager = this.assets
             val assetFiles = assetManager.list("")
